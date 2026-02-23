@@ -1,11 +1,11 @@
 
-export interface WebsiteSegment {
-  segmentName: string;
-  urlExample: string;
+export interface UrlAnalysis {
+  url: string;
+  schemaType: string;
   jsonLd: string;
-  description: string;
+  explanation: string;
 }
 
 export interface AnalysisResponse {
-  segments: WebsiteSegment[];
+  results: UrlAnalysis[];
 }

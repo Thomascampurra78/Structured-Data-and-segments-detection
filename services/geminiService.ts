@@ -2,37 +2,41 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResponse } from "../types";
 
-// Fixed: Initialized GoogleGenAI using process.env.API_KEY directly as per instructions
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-export const analyzeDomain = async (domain: string): Promise<AnalysisResponse> => {
+export const analyzeUrls = async (urls: string[]): Promise<AnalysisResponse> => {
+  const urlListString = urls.join("\n");
+  
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
-    contents: `Analyze the website domain: "${domain}". 
-    1. Identify the 5-7 most common SEO segments of this website (e.g., Homepage, Blog/Articles, E-commerce/Product Pages, About/Corporate, Services, Contact, Help/Documentation). 
-    2. For each segment, provide a plausible example URL based on the domain.
-    3. For each example, generate a valid JSON-LD structured data snippet (e.g., Organization, Article, Product, BreadcrumbList, FAQPage).
-    4. Provide a brief 1-sentence description of the JSON-LD schema type used for that segment.`,
+    contents: `Analyze the following list of URLs and generate valid JSON-LD structured data for each one. 
+    URLs:
+    ${urlListString}
+
+    For each URL:
+    1. Determine the most appropriate Schema.org type based on the URL structure (e.g., Product, Article, FAQPage, BreadcrumbList, LocalBusiness, Organization, etc.).
+    2. Generate a valid JSON-LD snippet. IMPORTANT: The JSON must be PRETTY-PRINTED with standard 2-space indentation and clear line breaks to ensure maximum readability.
+    3. Provide a brief explanation of why that schema type was chosen.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          segments: {
+          results: {
             type: Type.ARRAY,
             items: {
               type: Type.OBJECT,
               properties: {
-                segmentName: { type: Type.STRING },
-                urlExample: { type: Type.STRING },
-                jsonLd: { type: Type.STRING, description: "Full JSON-LD string" },
-                description: { type: Type.STRING, description: "Brief explanation of the schema used" }
+                url: { type: Type.STRING },
+                schemaType: { type: Type.STRING },
+                jsonLd: { type: Type.STRING, description: "Full JSON-LD string, pretty-printed with 2-space indentation" },
+                explanation: { type: Type.STRING, description: "Brief explanation of the schema choice" }
               },
-              required: ["segmentName", "urlExample", "jsonLd", "description"]
+              required: ["url", "schemaType", "jsonLd", "explanation"]
             }
           }
         },
-        required: ["segments"]
+        required: ["results"]
       },
       thinkingConfig: { thinkingBudget: 4000 }
     }

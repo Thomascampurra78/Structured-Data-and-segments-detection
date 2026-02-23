@@ -1,30 +1,27 @@
 
 import React, { useState } from 'react';
-import DomainForm from './components/DomainForm';
+import UrlInputForm from './components/UrlInputForm';
 import ResultsView from './components/ResultsView';
 import ExportButtons from './components/ExportButtons';
-import { analyzeDomain } from './services/geminiService';
-import { WebsiteSegment } from './types';
-// Fixed: Added missing 'Layout' icon to the lucide-react import
-import { AlertCircle, Zap, ShieldCheck, BarChart3, Layout } from 'lucide-react';
+import { analyzeUrls } from './services/geminiService';
+import { UrlAnalysis } from './types';
+import { AlertCircle, Zap, ShieldCheck, Box, Settings2 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [segments, setSegments] = useState<WebsiteSegment[]>([]);
+  const [results, setResults] = useState<UrlAnalysis[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentDomain, setCurrentDomain] = useState<string>('');
 
-  const handleAnalyze = async (domain: string) => {
+  const handleAnalyze = async (urls: string[]) => {
     setIsLoading(true);
     setError(null);
-    setCurrentDomain(domain);
     try {
-      const result = await analyzeDomain(domain);
-      setSegments(result.segments);
+      const result = await analyzeUrls(urls);
+      setResults(result.results);
     } catch (err) {
       console.error(err);
-      setError('An error occurred while analyzing the domain. Please try again.');
-      setSegments([]);
+      setError('An error occurred while generating structured data. Please check your URLs and try again.');
+      setResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -32,36 +29,32 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-24">
-      {/* Background decoration */}
       <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent pointer-events-none" />
 
-      {/* Header */}
       <header className="pt-16 pb-12 px-4 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-6">
           <Zap className="w-3 h-3 fill-current" />
-          <span>SEO Analysis Engine</span>
+          <span>SEO Batch Processor</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-black text-slate-900 mb-4 tracking-tight">
           Structured Data tool <br />
           <span className="text-blue-600">& Segment overview</span>
         </h1>
         <p className="text-slate-500 max-w-2xl mx-auto text-lg">
-          Instantly detect key website structures and generate validated JSON-LD schema for every segment of your domain.
+          Paste a list of URLs to automatically generate tailored, high-performance JSON-LD structured data for each page.
         </p>
       </header>
 
       <main className="px-4">
-        {/* Input Section */}
-        <DomainForm onAnalyze={handleAnalyze} isLoading={isLoading} />
+        <UrlInputForm onAnalyze={handleAnalyze} isLoading={isLoading} />
 
-        {/* Status Messaging */}
         {isLoading && (
           <div className="max-w-2xl mx-auto mt-20 text-center animate-pulse">
             <div className="inline-block p-4 rounded-full bg-blue-50 text-blue-600 mb-4">
-              <BarChart3 className="w-12 h-12" />
+              <Settings2 className="w-12 h-12 animate-spin-slow" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Analyzing Domain Architecture...</h2>
-            <p className="text-slate-500">Detecting segments and generating structured data snippets.</p>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Analyzing URL Content...</h2>
+            <p className="text-slate-500">Mapping paths to Schema.org standards and writing optimized code.</p>
           </div>
         )}
 
@@ -72,13 +65,11 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Results Section */}
-        {!isLoading && segments.length > 0 && (
+        {!isLoading && results.length > 0 && (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <ExportButtons segments={segments} domain={currentDomain} />
-            <ResultsView segments={segments} />
+            <ExportButtons results={results} />
+            <ResultsView results={results} />
             
-            {/* Footer Trust Indicator */}
             <div className="mt-20 flex flex-col items-center justify-center gap-6 opacity-40 grayscale pointer-events-none select-none">
               <div className="flex gap-12 flex-wrap justify-center">
                 <div className="flex items-center gap-2">
@@ -86,23 +77,22 @@ const App: React.FC = () => {
                   <span className="font-bold text-xl uppercase tracking-tighter">SEO VALIDATED</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Layout className="w-5 h-5" />
-                  <span className="font-bold text-xl uppercase tracking-tighter">SCHEMA.ORG</span>
+                  <Box className="w-5 h-5" />
+                  <span className="font-bold text-xl uppercase tracking-tighter">BATCH PROCESSED</span>
                 </div>
               </div>
-              <p className="text-xs font-medium">Automated Structured Data Architect v1.0</p>
+              <p className="text-xs font-medium">Bulk Structured Data Architect v2.0</p>
             </div>
           </div>
         )}
 
-        {/* Empty State */}
-        {!isLoading && segments.length === 0 && !error && (
-          <div className="mt-20 max-w-lg mx-auto grid grid-cols-2 gap-4">
+        {!isLoading && results.length === 0 && !error && (
+          <div className="mt-20 max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { label: 'Segment Detection', desc: 'Auto-identify categories' },
-              { label: 'URL Mapping', desc: 'Pattern-based examples' },
-              { label: 'JSON-LD', desc: 'W3C Compliant code' },
-              { label: 'Batch Export', desc: 'XLSX & PPT ready' },
+              { label: 'Bulk Input', desc: 'Process multiple URLs at once' },
+              { label: 'Smart Detection', desc: 'Auto-maps URL type to Schema' },
+              { label: 'JSON-LD', desc: 'W3C compliant code output' },
+              { label: 'Pro Exports', desc: 'Ready for Excel & PPT reporting' },
             ].map((feature, i) => (
               <div key={i} className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
                 <h4 className="font-bold text-slate-800 mb-1">{feature.label}</h4>
@@ -112,6 +102,16 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+      
+      <style>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 8s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };
