@@ -14,9 +14,10 @@ export const analyzeUrls = async (urls: string[]): Promise<AnalysisResponse> => 
     ${urlListString}
 
     For each URL:
-    1. Determine the most appropriate Schema.org type based on the URL structure (e.g., Product, Article, FAQPage, BreadcrumbList, LocalBusiness, Organization, etc.).
-    2. Generate a valid JSON-LD snippet. IMPORTANT: The JSON must be PRETTY-PRINTED with standard 2-space indentation and clear line breaks to ensure maximum readability.
-    3. Provide a brief explanation of why that schema type was chosen.`,
+    1. Identify the "Segment" or area of the site the URL belongs to (e.g., "article", "product", "category", "home", "about", "contact", etc.).
+    2. Determine the most appropriate Schema.org type based on the URL structure.
+    3. Generate a valid JSON-LD snippet. IMPORTANT: The JSON must be PRETTY-PRINTED with standard 2-space indentation.
+    4. Provide a brief explanation of why that schema type was chosen.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
@@ -28,11 +29,12 @@ export const analyzeUrls = async (urls: string[]): Promise<AnalysisResponse> => 
               type: Type.OBJECT,
               properties: {
                 url: { type: Type.STRING },
+                segment: { type: Type.STRING, description: "The site area/segment name (e.g. article, product)" },
                 schemaType: { type: Type.STRING },
                 jsonLd: { type: Type.STRING, description: "Full JSON-LD string, pretty-printed with 2-space indentation" },
                 explanation: { type: Type.STRING, description: "Brief explanation of the schema choice" }
               },
-              required: ["url", "schemaType", "jsonLd", "explanation"]
+              required: ["url", "segment", "schemaType", "jsonLd", "explanation"]
             }
           }
         },

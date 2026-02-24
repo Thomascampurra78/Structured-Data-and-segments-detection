@@ -1,5 +1,5 @@
 {
-  "name": "SEO Structured Data & Segment Tool",
+  "name": "Stuctured_Data_generator",
   "description": "A professional SEO utility to analyze website segments from a list of URLs, generate example URLs, and create JSON-LD structured data with export capabilities to Excel and PowerPoint.",
   "requestFramePermissions": []
 }

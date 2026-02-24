@@ -38,8 +38,13 @@ const JsonLdCard: React.FC<{ item: UrlAnalysis; index: number }> = ({ item, inde
           <Box className="w-5 h-5 text-blue-400" />
           <h3 className="text-white font-bold text-lg truncate max-w-md">{item.url}</h3>
         </div>
-        <div className="px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-xs font-mono uppercase tracking-wider">
-          {item.schemaType}
+        <div className="flex items-center gap-3">
+          <div className="px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-xs font-mono uppercase tracking-wider">
+            {item.schemaType}
+          </div>
+          <div className="px-3 py-1 bg-slate-700 rounded-full text-slate-300 text-xs font-mono uppercase tracking-wider">
+            {item.segment}
+          </div>
         </div>
       </div>
       

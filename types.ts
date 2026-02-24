@@ -1,6 +1,7 @@
 
 export interface UrlAnalysis {
   url: string;
+  segment: string;
   schemaType: string;
   jsonLd: string;
   explanation: string;

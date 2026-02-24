@@ -13,6 +13,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ results }) => {
   const exportToExcel = () => {
     const data = results.map(r => ({
       'URL': r.url,
+      'Segment': r.segment,
       'Schema Type': r.schemaType,
       'JSON-LD': r.jsonLd,
       'Explanation': r.explanation
@@ -24,6 +25,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ results }) => {
     
     worksheet['!cols'] = [
       { wch: 40 },
+      { wch: 15 },
       { wch: 20 },
       { wch: 60 },
       { wch: 40 }
